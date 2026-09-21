@@ -3,15 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feliz Día de las Flores Amarillas</title>
-    <!-- Fuente cursiva romántica -->
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+    <title>Feliz Día de las Flores Amarillas 🌻</title>
+    <!-- Tipografías elegantes y románticas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --sky-top: #87CEEB;
-            --sky-bottom: #e0f6ff;
-            --grass-top: #90EE90;
-            --grass-bottom: #228B22;
+            --sky-top: #5da7f0;
+            --sky-mid: #a7d8ff;
+            --sky-warm: #fdf2d0;
+            --hill-back: #48a859;
+            --hill-mid: #38974a;
+            --hill-front: #27813a;
+            --gold-accent: #d97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         body, html {
@@ -21,244 +32,377 @@
             height: 100%;
             overflow: hidden;
             font-family: 'Caveat', cursive;
-            background: linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-bottom) 60%, var(--grass-top) 60%, var(--grass-bottom) 100%);
-            touch-action: none; /* Previene scroll en móvil */
-            user-select: none;
+            background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 45%, var(--sky-warm) 65%);
+            touch-action: none;
         }
 
-        /* Elementos del paisaje */
-        .sun {
+        /* Canvas para partículas de polen y lluvia de pétalos */
+        #fx-canvas {
             position: absolute;
-            top: 8%;
-            right: 15%;
-            width: 80px;
-            height: 80px;
-            background: #ffeb3b;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        /* Sol con resplandor cálido */
+        .sun-wrapper {
+            position: absolute;
+            top: 6%;
+            right: 12%;
+            width: 90px;
+            height: 90px;
+            pointer-events: none;
+        }
+
+        .sun-glow {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            top: -45px;
+            left: -45px;
+            background: radial-gradient(circle, rgba(255,235,59,0.45) 0%, rgba(255,213,79,0.15) 50%, rgba(255,255,255,0) 75%);
             border-radius: 50%;
-            box-shadow: 0 0 40px #ffc107, 0 0 80px #ffeb3b;
-            animation: pulse-sun 3s infinite alternate;
+            animation: pulse-glow 5s infinite alternate ease-in-out;
         }
 
-        @keyframes pulse-sun {
-            0% { transform: scale(1); box-shadow: 0 0 40px #ffc107, 0 0 80px #ffeb3b; }
-            100% { transform: scale(1.05); box-shadow: 0 0 60px #ffeb3b, 0 0 120px #fff9c4; }
+        .sun-core {
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle, #fff9c4 20%, #fde047 60%, #f59e0b 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 50px #facc15, 0 0 100px #fde047;
         }
 
+        @keyframes pulse-glow {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            100% { transform: scale(1.15); opacity: 1; }
+        }
+
+        /* Nubes suaves */
         .cloud {
             position: absolute;
-            background: white;
+            background: rgba(255, 255, 255, 0.88);
             border-radius: 50px;
-            opacity: 0.8;
             filter: blur(1px);
+            pointer-events: none;
         }
         .cloud::before, .cloud::after {
             content: '';
             position: absolute;
-            background: white;
+            background: rgba(255, 255, 255, 0.88);
             border-radius: 50%;
         }
-        .cloud1 { top: 15%; left: -20%; width: 120px; height: 40px; animation: move-cloud 30s linear infinite; }
-        .cloud1::before { width: 60px; height: 60px; top: -30px; left: 15px; }
-        .cloud1::after { width: 50px; height: 50px; top: -20px; right: 15px; }
+        .cloud1 { top: 12%; left: -25%; width: 140px; height: 42px; animation: drift-cloud 38s linear infinite; }
+        .cloud1::before { width: 65px; height: 65px; top: -30px; left: 20px; }
+        .cloud1::after { width: 50px; height: 50px; top: -20px; right: 20px; }
 
-        .cloud2 { top: 25%; left: -30%; width: 160px; height: 50px; animation: move-cloud 45s linear infinite 10s; }
-        .cloud2::before { width: 80px; height: 80px; top: -40px; left: 20px; }
-        .cloud2::after { width: 70px; height: 70px; top: -30px; right: 30px; }
+        .cloud2 { top: 22%; left: -35%; width: 190px; height: 52px; animation: drift-cloud 52s linear infinite 14s; opacity: 0.75; }
+        .cloud2::before { width: 85px; height: 85px; top: -42px; left: 25px; }
+        .cloud2::after { width: 70px; height: 70px; top: -30px; right: 35px; }
 
-        @keyframes move-cloud {
+        @keyframes drift-cloud {
             0% { transform: translateX(0); }
-            100% { transform: translateX(120vw); }
+            100% { transform: translateX(140vw); }
         }
 
-        /* Textos UI */
+        /* Avecitas lejanas */
+        .birds {
+            position: absolute;
+            top: 18%;
+            left: -10%;
+            pointer-events: none;
+            animation: fly-birds 35s linear infinite;
+            opacity: 0.55;
+        }
+        @keyframes fly-birds {
+            0% { transform: translate(0, 0) scale(0.7); }
+            50% { transform: translate(60vw, -30px) scale(0.85); }
+            100% { transform: translate(120vw, 10px) scale(0.7); }
+        }
+
+        /* Colinas con relieve en capas SVG */
+        .hills-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 48%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .hill-layer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Instrucción inicial */
         #instruction {
             position: absolute;
-            top: 20%;
+            top: 24%;
             width: 100%;
             text-align: center;
-            font-size: 2.5rem;
-            color: #333;
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+            font-size: 2.3rem;
+            color: #1e3a2b;
+            text-shadow: 0 2px 10px rgba(255,255,255,0.9);
             pointer-events: none;
-            transition: opacity 1s;
-            z-index: 10;
+            transition: opacity 0.8s ease;
+            z-index: 15;
             padding: 0 20px;
-            box-sizing: border-box;
+            font-weight: 700;
         }
 
-        /* Modal para los mensajes de cada flor */
+        /* Carta Romántica (Modal de mensajes) */
         #message-modal {
             position: fixed;
-            top: 50%;
+            top: 48%;
             left: 50%;
-            transform: translate(-50%, -40%) scale(0.9);
-            background: rgba(255, 255, 255, 0.95);
-            padding: 25px 35px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            transform: translate(-50%, -42%) scale(0.85);
+            background: #fffef9;
+            background-image: radial-gradient(#e5e7eb 0.75px, transparent 0.75px);
+            background-size: 16px 16px;
+            padding: 32px 36px 36px 36px;
+            border-radius: 18px;
+            box-shadow: 0 20px 50px rgba(15, 30, 20, 0.25), 0 0 0 1px rgba(217, 119, 6, 0.25);
             text-align: center;
-            font-size: 2.2rem;
-            color: #2c3e50;
+            font-size: 2.25rem;
+            color: #27372d;
             opacity: 0;
             pointer-events: none;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 100;
-            width: 85%;
-            max-width: 450px;
-            border: 3px solid #facc15;
+            width: 88%;
+            max-width: 440px;
             white-space: pre-wrap;
-            line-height: 1.3;
+            line-height: 1.35;
         }
+
+        #message-modal::before {
+            content: '🌻';
+            display: block;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
         #message-modal.show {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
         }
 
-        /* Mensaje final a pantalla completa */
-        #final-message {
+        /* Gran Pantalla Final */
+        #final-screen {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255, 255, 255, 0.85);
+            background: radial-gradient(circle at center, rgba(255, 253, 240, 0.92) 0%, rgba(254, 243, 199, 0.94) 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 40px;
+            padding: 35px;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 2.5s ease-in-out;
+            transition: opacity 3s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 200;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
         }
-        #final-message.show {
+
+        #final-screen.show {
             opacity: 1;
             pointer-events: auto;
         }
-        #final-text {
-            font-size: 3rem;
-            color: #333;
-            max-width: 600px;
-            text-shadow: 1px 1px 3px rgba(255,255,255,1);
-            line-height: 1.2;
-        }
-        #final-message span {
-            margin-top: 30px;
-            font-size: 2rem;
-            color: #d97706;
-            font-weight: bold;
+
+        .final-card {
+            background: #ffffff;
+            border: 2px solid #fde047;
+            padding: 40px 35px;
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(180, 120, 20, 0.2), 0 0 35px rgba(250, 204, 21, 0.35);
+            max-width: 580px;
+            position: relative;
         }
 
-        /* Sistema de Flores */
-        .flower-container {
+        #final-text {
+            font-size: 2.7rem;
+            color: #1f2937;
+            line-height: 1.3;
+            margin: 0;
+        }
+
+        .final-subtitle {
+            margin-top: 25px;
+            display: block;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.7rem;
+            color: #b45309;
+            letter-spacing: 0.5px;
+        }
+
+        /* Contenedor de la flor y partes */
+        .flower-wrapper {
             position: absolute;
             bottom: 0;
-            width: 10px;
+            width: 0;
+            height: 0;
             pointer-events: none;
-            z-index: 5;
+            z-index: 10;
+        }
+
+        .stem-box {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform-origin: bottom center;
+            width: 8px;
         }
 
         .stem {
             position: absolute;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 0px;
-            background: linear-gradient(to top, #0f766e, #22c55e);
-            border-radius: 4px;
-            transition: height 1.5s ease-out;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: linear-gradient(to top, #1b6330, #2ea34c, #4ade80);
+            border-radius: 5px;
+            transition: height 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 1px 0 4px rgba(0,0,0,0.15);
         }
 
         .leaf {
             position: absolute;
-            width: 25px;
-            height: 12px;
-            background: #22c55e;
+            width: 32px;
+            height: 16px;
+            background: linear-gradient(135deg, #4ade80, #15803d);
             opacity: 0;
-            transition: all 0.5s ease-out 1s; /* Retraso para que crezca el tallo primero */
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1s, opacity 0.6s ease 1s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.12);
         }
+
         .leaf.left {
             right: 100%;
             bottom: 30%;
-            border-radius: 15px 0 15px 0;
+            border-radius: 20px 0 20px 0;
             transform-origin: right center;
-            transform: scale(0) rotate(-20deg);
+            transform: scale(0) rotate(-15deg);
         }
+
         .leaf.right {
             left: 100%;
-            bottom: 60%;
-            border-radius: 0 15px 0 15px;
+            bottom: 55%;
+            border-radius: 0 20px 0 20px;
             transform-origin: left center;
-            transform: scale(0) rotate(20deg);
+            transform: scale(0) rotate(15deg);
         }
-        .flower-container.grown .leaf {
+
+        .flower-wrapper.grown .leaf {
             opacity: 1;
             transform: scale(1) rotate(0deg);
         }
 
-        .head {
+        .flower-head {
             position: absolute;
             top: 0;
             left: 50%;
-            width: 90px;
-            height: 90px;
             transform: translate(-50%, -50%) scale(0);
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.2s; /* Aparece después del tallo */
-            filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.1));
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.25s;
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.16));
         }
 
-        .flower-container.grown .head {
+        .flower-wrapper.grown .flower-head {
             transform: translate(-50%, -50%) scale(1);
-            animation: sway 4s infinite ease-in-out alternate 2s;
         }
 
-        .flower-container.glow .head {
-            filter: drop-shadow(0 0 20px #facc15) drop-shadow(0 0 40px #fef08a);
-            animation: sway 4s infinite ease-in-out alternate, pulse-flower 2s infinite alternate;
+        /* Resplandor especial al final */
+        .flower-wrapper.glow .flower-head {
+            filter: drop-shadow(0 0 22px #facc15) drop-shadow(0 0 45px #fef08a);
+            transition: filter 2s ease;
         }
 
-        @keyframes sway {
-            0% { transform: translate(-50%, -50%) scale(1) rotate(-6deg); }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(6deg); }
+        /* Chispas de tierra al brotar */
+        .burst-particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 12;
+            animation: pop-burst 0.7s forwards cubic-bezier(0.2, 0.9, 0.3, 1);
         }
 
-        @keyframes pulse-flower {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            100% { transform: translate(-50%, -50%) scale(1.05); }
+        @keyframes pop-burst {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
         }
 
-        .petals {
-            transform-origin: center;
-            animation: spin-slow 30s linear infinite;
+        /* Briznas de pasto dinámicas en la base */
+        .grass-tuft {
+            position: absolute;
+            bottom: 0;
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 11;
         }
-
-        @keyframes spin-slow {
-            100% { transform: rotate(360deg); }
-        }
-
     </style>
 </head>
 <body>
 
-    <!-- Escenario -->
-    <div class="sun"></div>
+    <!-- Cielo y Elementos -->
+    <div class="sun-wrapper">
+        <div class="sun-glow"></div>
+        <div class="sun-core"></div>
+    </div>
+
     <div class="cloud cloud1"></div>
     <div class="cloud cloud2"></div>
 
-    <div id="instruction">Toca la tierra para plantar una flor...</div>
+    <!-- Avecitas decorativas en SVG -->
+    <svg class="birds" width="120" height="40" viewBox="0 0 120 40">
+        <path d="M5 25 Q15 15 25 25 Q35 15 45 25" fill="none" stroke="#2c5282" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M65 15 Q72 8 80 15 Q88 8 96 15" fill="none" stroke="#2c5282" stroke-width="2" stroke-linecap="round"/>
+        <path d="M98 28 Q103 23 108 28 Q113 23 118 28" fill="none" stroke="#2c5282" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
 
-    <!-- UI -->
+    <!-- Canvas de Ambiente y Lluvia de Pétalos -->
+    <canvas id="fx-canvas"></canvas>
+
+    <!-- Colinas en capas (con curvas SVG para relieve orgánico) -->
+    <div class="hills-container">
+        <!-- Colina Trasera -->
+        <svg class="hill-layer" viewBox="0 0 1440 400" preserveAspectRatio="none">
+            <path fill="var(--hill-back)" d="M0,180 C320,80 620,240 980,140 C1200,80 1340,160 1440,150 L1440,400 L0,400 Z"></path>
+        </svg>
+        <!-- Colina Media -->
+        <svg class="hill-layer" viewBox="0 0 1440 400" preserveAspectRatio="none">
+            <path fill="var(--hill-mid)" opacity="0.9" d="M0,230 C220,160 480,290 820,200 C1100,120 1320,240 1440,210 L1440,400 L0,400 Z"></path>
+        </svg>
+        <!-- Colina Frontal con relieve de pasto -->
+        <svg class="hill-layer" viewBox="0 0 1440 400" preserveAspectRatio="none">
+            <path fill="var(--hill-front)" d="M0,280 C360,210 740,320 1120,250 C1280,220 1390,270 1440,260 L1440,400 L0,400 Z"></path>
+        </svg>
+    </div>
+
+    <!-- Indicador inicial -->
+    <div id="instruction">Toca la tierra para sembrar una flor...</div>
+
+    <!-- Carta Romántica con el mensaje -->
     <div id="message-modal"></div>
 
-    <div id="final-message">
-        <!-- Puedes editar este mensaje final directamente aquí en el HTML -->
-        <div id="final-text">Todas las flores regaladas este día se marchitarán o morirán, este recuerdo permanecerá.</div>
-        <span>🌻 Feliz Día de las Flores Amarillas 🌻</span>
+    <!-- Pantalla Final con la dedicatoria -->
+    <div id="final-screen">
+        <div class="final-card">
+            <div id="final-text">Todas las flores regaladas este día se marchitarán o morirán, este recuerdo permanecerá.</div>
+            <span class="final-subtitle">🌻 Feliz Día de las Flores Amarillas 🌻</span>
+        </div>
     </div>
 
     <script>
-        // === ARRAY DE MENSAJES EDITABLES ===
+        // === MENSAJES ORIGINALES EDITABLES ===
         const messages = [
             "Como estas flores que hoy florecen,\nasí crece lo que siento por ti:\ndespacio, seguro, sin apuro,\npero sin poder detenerse.",
             "No planté flores al azar,\ncada una la sembré con intención.\nSi esto fuera código, tú serías\nla única constante en mi función.",
@@ -266,75 +410,97 @@
             "Dicen que hoy florece la primavera,\npero contigo florece todo el año.\nFeliz Día de las Flores Amarillas,\nmi persona favorita en este mundo.",
             "Un jardín entero planté por ti,\nflor por flor, recuerdo por recuerdo.\nFeliz Día de las Flores Amarillas,\ngracias por ser mi primavera."
         ];
-        // ===================================
+        // =====================================
 
         let plantedCount = 0;
         let canPlant = true;
+        let isFinalPhase = false;
 
         const instruction = document.getElementById('instruction');
         const modal = document.getElementById('message-modal');
-        const finalMessage = document.getElementById('final-message');
+        const finalScreen = document.getElementById('final-screen');
 
+        // Paleta de pétalos para variación orgánica
+        const petalGradients = [
+            { main: "#facc15", deep: "#eab308" }, // Amarillo dorado clásico
+            { main: "#fde047", deep: "#f59e0b" }, // Amarillo cálido y brillante
+            { main: "#fbbf24", deep: "#d97706" }, // Amarillo miel suave
+            { main: "#fef08a", deep: "#eab308" }  // Amarillo claro primaveral
+        ];
+
+        // --- MANEJO DE CLIC EN LA TIERRA ---
         document.body.addEventListener('click', (e) => {
             if (!canPlant || plantedCount >= messages.length) return;
 
-            // Bloquear clic si es muy arriba en el cielo (asegura que las flores no crezcan flotando)
+            // Evitar plantar muy arriba en el cielo despejado
             const yRatio = e.clientY / window.innerHeight;
-            if (yRatio < 0.3) return; 
+            if (yRatio < 0.4) return;
 
             canPlant = false;
-            instruction.style.opacity = '0'; // Ocultar instrucción inicial
+            instruction.style.opacity = '0';
 
-            // Crear y agregar la flor
-            const flower = createFlower(e.clientX, e.clientY);
+            // Efecto de pequeñas chispas / tierra fértil al sembrar
+            createSoilBurst(e.clientX, e.clientY);
+
+            // Crear y sembrar la flor con características orgánicas
+            const flower = plantOrganicFlower(e.clientX, e.clientY);
             document.body.appendChild(flower);
 
-            // Iniciar animación de crecimiento (tallo)
+            // Animar crecimiento del tallo
             setTimeout(() => {
                 flower.classList.add('grown');
-                // La altura del tallo es la distancia desde abajo de la pantalla hasta el punto del clic
-                const stemHeight = window.innerHeight - e.clientY + 40; 
+                const stemHeight = window.innerHeight - e.clientY + 20;
                 flower.querySelector('.stem').style.height = stemHeight + 'px';
-            }, 50);
+            }, 60);
 
-            // Mostrar el mensaje correspondiente a esta flor
+            // Revelar carta con mensaje
             setTimeout(() => {
-                showModal(messages[plantedCount]);
+                showLetter(messages[plantedCount]);
                 plantedCount++;
-            }, 2000); // Esperar a que la flor florezca (tallo + cabeza)
+            }, 1900);
         });
 
-        function showModal(text) {
+        function showLetter(text) {
             modal.innerText = text;
             modal.classList.add('show');
-            
-            // El mensaje se queda visible por unos segundos y luego desaparece
+
             setTimeout(() => {
                 modal.classList.remove('show');
-                
-                // Si ya se plantaron todas las flores
+
                 if (plantedCount >= messages.length) {
-                    setTimeout(showFinalEvent, 1000);
+                    setTimeout(startGrandFinale, 1200);
                 } else {
-                    canPlant = true; // Permitir plantar la siguiente
+                    canPlant = true;
                 }
-            }, 4500); // 4.5 segundos de lectura
+            }, 4600); // Tiempo agradable para leer el mensaje
         }
 
-        function showFinalEvent() {
-            // Animación final: iluminar las flores
-            const flowers = document.querySelectorAll('.flower-container');
-            flowers.forEach(f => f.classList.add('glow'));
+        function startGrandFinale() {
+            isFinalPhase = true;
 
-            // Mostrar mensaje final
-            finalMessage.classList.add('show');
+            // Hacer resplandecer todas las flores
+            document.querySelectorAll('.flower-wrapper').forEach(f => f.classList.add('glow'));
+
+            // Revelar carta final
+            finalScreen.classList.add('show');
         }
 
-        function createFlower(x, y) {
-            const container = document.createElement('div');
-            container.className = 'flower-container';
-            container.style.left = x + 'px';
-            
+        // --- GENERADOR ORGÁNICO DE FLORES (SVG PURO) ---
+        function plantOrganicFlower(x, y) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flower-wrapper';
+            wrapper.style.left = x + 'px';
+
+            // Variaciones orgánicas aleatorias
+            const randomScale = (0.9 + Math.random() * 0.22).toFixed(2); // Tamaño entre 0.9x y 1.12x
+            const randomTilt = ((Math.random() - 0.5) * 6).toFixed(1);   // Inclinación sutil entre -3° y +3°
+            const colorScheme = petalGradients[Math.floor(Math.random() * petalGradients.length)];
+            const petalCount = 12 + (Math.random() > 0.5 ? 2 : 0);       // 12 o 14 pétalos
+
+            const stemBox = document.createElement('div');
+            stemBox.className = 'stem-box';
+            stemBox.style.transform = `rotate(${randomTilt}deg)`;
+
             const stem = document.createElement('div');
             stem.className = 'stem';
 
@@ -343,51 +509,215 @@
             const leaf2 = document.createElement('div');
             leaf2.className = 'leaf right';
 
-            // Dibujar la flor con SVG (sin imágenes externas)
+            // Dibujo de la flor en SVG
             const svgNS = "http://www.w3.org/2000/svg";
             const svg = document.createElementNS(svgNS, "svg");
+            const headSize = Math.round(92 * randomScale);
             svg.setAttribute("viewBox", "-50 -50 100 100");
-            svg.setAttribute("class", "head");
+            svg.setAttribute("class", "flower-head");
+            svg.style.width = headSize + "px";
+            svg.style.height = headSize + "px";
 
+            // Pétalos con matices
             const petalsGroup = document.createElementNS(svgNS, "g");
-            petalsGroup.setAttribute("class", "petals");
-            
-            // Crear 12 pétalos amarillos
-            for (let i = 0; i < 12; i++) {
+            const step = 360 / petalCount;
+
+            for (let i = 0; i < petalCount; i++) {
                 const petal = document.createElementNS(svgNS, "ellipse");
                 petal.setAttribute("cx", "0");
                 petal.setAttribute("cy", "-24");
-                petal.setAttribute("rx", "10");
+                petal.setAttribute("rx", "9.5");
                 petal.setAttribute("ry", "26");
-                petal.setAttribute("fill", "#facc15");
-                petal.setAttribute("transform", `rotate(${i * 30})`);
+                // Alternar sutilmente la profundidad de color en pétalos
+                petal.setAttribute("fill", i % 2 === 0 ? colorScheme.main : colorScheme.deep);
+                petal.setAttribute("transform", `rotate(${i * step})`);
                 petalsGroup.appendChild(petal);
             }
 
-            // Centro de la flor
-            const core = document.createElementNS(svgNS, "circle");
-            core.setAttribute("cx", "0");
-            core.setAttribute("cy", "0");
-            core.setAttribute("r", "16");
-            core.setAttribute("fill", "#8B4513");
+            // Corona interior pequeña de pétalos para dar volumen
+            const innerPetals = document.createElementNS(svgNS, "g");
+            for (let i = 0; i < petalCount; i++) {
+                const p = document.createElementNS(svgNS, "ellipse");
+                p.setAttribute("cx", "0");
+                p.setAttribute("cy", "-17");
+                p.setAttribute("rx", "6");
+                p.setAttribute("ry", "14");
+                p.setAttribute("fill", colorScheme.main);
+                p.setAttribute("opacity", "0.95");
+                p.setAttribute("transform", `rotate(${i * step + (step / 2)})`);
+                innerPetals.appendChild(p);
+            }
+
+            // Centro café oscuro / texturizado de girasol
+            const coreBack = document.createElementNS(svgNS, "circle");
+            coreBack.setAttribute("cx", "0");
+            coreBack.setAttribute("cy", "0");
+            coreBack.setAttribute("r", "16");
+            coreBack.setAttribute("fill", "#6a350c");
+
+            const coreMid = document.createElementNS(svgNS, "circle");
+            coreMid.setAttribute("cx", "0");
+            coreMid.setAttribute("cy", "0");
+            coreMid.setAttribute("r", "13");
+            coreMid.setAttribute("fill", "#8c4410");
 
             const coreHighlight = document.createElementNS(svgNS, "circle");
             coreHighlight.setAttribute("cx", "-3");
             coreHighlight.setAttribute("cy", "-3");
-            coreHighlight.setAttribute("r", "14");
-            coreHighlight.setAttribute("fill", "#a0522d");
+            coreHighlight.setAttribute("r", "10");
+            coreHighlight.setAttribute("fill", "#ab5717");
 
             svg.appendChild(petalsGroup);
-            svg.appendChild(core);
+            svg.appendChild(innerPetals);
+            svg.appendChild(coreBack);
+            svg.appendChild(coreMid);
             svg.appendChild(coreHighlight);
 
             stem.appendChild(leaf1);
             stem.appendChild(leaf2);
-            stem.appendChild(svg); // La cabeza SVG se ancla al top del tallo
+            stem.appendChild(svg);
+            stemBox.appendChild(stem);
 
-            container.appendChild(stem);
-            return container;
+            // Briznas de hierba en la base de la flor
+            const grassTuft = createGrassTuftSVG();
+            wrapper.appendChild(grassTuft);
+            wrapper.appendChild(stemBox);
+
+            return wrapper;
         }
+
+        // Briznas de hierba en la raíz
+        function createGrassTuftSVG() {
+            const svgNS = "http://www.w3.org/2000/svg";
+            const gSvg = document.createElementNS(svgNS, "svg");
+            gSvg.setAttribute("class", "grass-tuft");
+            gSvg.setAttribute("width", "36");
+            gSvg.setAttribute("height", "20");
+            gSvg.setAttribute("viewBox", "0 0 36 20");
+            gSvg.innerHTML = `
+                <path d="M18,20 Q12,8 5,3 Q14,10 18,20" fill="#22c55e" />
+                <path d="M18,20 Q18,4 18,0 Q20,8 18,20" fill="#16a34a" />
+                <path d="M18,20 Q24,8 31,4 Q22,11 18,20" fill="#22c55e" />
+            `;
+            return gSvg;
+        }
+
+        // Partículas al hacer clic
+        function createSoilBurst(x, y) {
+            const colors = ['#fde047', '#facc15', '#4ade80', '#16a34a'];
+            for (let i = 0; i < 9; i++) {
+                const p = document.createElement('div');
+                p.className = 'burst-particle';
+                const size = 5 + Math.random() * 6;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 20 + Math.random() * 35;
+                p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+                p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 750);
+            }
+        }
+
+        // --- SISTEMA DE PARTÍCULAS CANVAS (POLEN Y LLUVIA FINAL) ---
+        const canvas = document.getElementById('fx-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // 1. Polen flotante dorado
+        const pollenArray = [];
+        for (let i = 0; i < 35; i++) {
+            pollenArray.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: 1 + Math.random() * 2,
+                vy: -0.3 - Math.random() * 0.5,
+                vx: (Math.random() - 0.5) * 0.3,
+                alpha: 0.2 + Math.random() * 0.6,
+                glow: 4 + Math.random() * 8
+            });
+        }
+
+        // 2. Pétalos para el final
+        const fallingPetals = [];
+        function addPetal() {
+            fallingPetals.push({
+                x: Math.random() * canvas.width,
+                y: -20,
+                size: 9 + Math.random() * 10,
+                vy: 1.2 + Math.random() * 1.8,
+                vx: 0.6 + Math.random() * 1.4,
+                angle: Math.random() * Math.PI * 2,
+                vRot: (Math.random() - 0.5) * 0.05,
+                color: Math.random() > 0.4 ? '#facc15' : '#fde047'
+            });
+        }
+
+        function animateFX() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Animar polen
+            pollenArray.forEach(p => {
+                p.y += p.vy;
+                p.x += p.vx;
+                if (p.y < -10) {
+                    p.y = canvas.height + 10;
+                    p.x = Math.random() * canvas.width;
+                }
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(254, 240, 138, ${p.alpha})`;
+                ctx.shadowColor = '#facc15';
+                ctx.shadowBlur = p.glow;
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // Si es la fase final: lluvia de pétalos
+            if (isFinalPhase) {
+                if (fallingPetals.length < 55 && Math.random() < 0.35) {
+                    addPetal();
+                }
+
+                for (let i = fallingPetals.length - 1; i >= 0; i--) {
+                    const pt = fallingPetals[i];
+                    pt.y += pt.vy;
+                    pt.x += pt.vx + Math.sin(pt.y * 0.02) * 0.7;
+                    pt.angle += pt.vRot;
+
+                    ctx.save();
+                    ctx.translate(pt.x, pt.y);
+                    ctx.rotate(pt.angle);
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, pt.size * 0.55, pt.size, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = pt.color;
+                    ctx.shadowColor = 'rgba(217, 119, 6, 0.2)';
+                    ctx.shadowBlur = 4;
+                    ctx.fill();
+                    ctx.restore();
+
+                    if (pt.y > canvas.height + 30) {
+                        fallingPetals.splice(i, 1);
+                    }
+                }
+            }
+
+            requestAnimationFrame(animateFX);
+        }
+        animateFX();
     </script>
 </body>
 </html>
