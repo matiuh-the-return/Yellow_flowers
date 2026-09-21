@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feliz Día de las Flores Amarillas</title>
+    <!-- Fuente cursiva romántica -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sky-top: #87CEEB;
+            --sky-bottom: #e0f6ff;
+            --grass-top: #90EE90;
+            --grass-bottom: #228B22;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Caveat', cursive;
+            background: linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-bottom) 60%, var(--grass-top) 60%, var(--grass-bottom) 100%);
+            touch-action: none; /* Previene scroll en móvil */
+            user-select: none;
+        }
+
+        /* Elementos del paisaje */
+        .sun {
+            position: absolute;
+            top: 8%;
+            right: 15%;
+            width: 80px;
+            height: 80px;
+            background: #ffeb3b;
+            border-radius: 50%;
+            box-shadow: 0 0 40px #ffc107, 0 0 80px #ffeb3b;
+            animation: pulse-sun 3s infinite alternate;
+        }
+
+        @keyframes pulse-sun {
+            0% { transform: scale(1); box-shadow: 0 0 40px #ffc107, 0 0 80px #ffeb3b; }
+            100% { transform: scale(1.05); box-shadow: 0 0 60px #ffeb3b, 0 0 120px #fff9c4; }
+        }
+
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50px;
+            opacity: 0.8;
+            filter: blur(1px);
+        }
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+        }
+        .cloud1 { top: 15%; left: -20%; width: 120px; height: 40px; animation: move-cloud 30s linear infinite; }
+        .cloud1::before { width: 60px; height: 60px; top: -30px; left: 15px; }
+        .cloud1::after { width: 50px; height: 50px; top: -20px; right: 15px; }
+
+        .cloud2 { top: 25%; left: -30%; width: 160px; height: 50px; animation: move-cloud 45s linear infinite 10s; }
+        .cloud2::before { width: 80px; height: 80px; top: -40px; left: 20px; }
+        .cloud2::after { width: 70px; height: 70px; top: -30px; right: 30px; }
+
+        @keyframes move-cloud {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(120vw); }
+        }
+
+        /* Textos UI */
+        #instruction {
+            position: absolute;
+            top: 20%;
+            width: 100%;
+            text-align: center;
+            font-size: 2.5rem;
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+            pointer-events: none;
+            transition: opacity 1s;
+            z-index: 10;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        /* Modal para los mensajes de cada flor */
+        #message-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -40%) scale(0.9);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            text-align: center;
+            font-size: 2.2rem;
+            color: #2c3e50;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+            width: 85%;
+            max-width: 450px;
+            border: 3px solid #facc15;
+            white-space: pre-wrap;
+            line-height: 1.3;
+        }
+        #message-modal.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Mensaje final a pantalla completa */
+        #final-message {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 2.5s ease-in-out;
+            z-index: 200;
+            backdrop-filter: blur(5px);
+        }
+        #final-message.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #final-text {
+            font-size: 3rem;
+            color: #333;
+            max-width: 600px;
+            text-shadow: 1px 1px 3px rgba(255,255,255,1);
+            line-height: 1.2;
+        }
+        #final-message span {
+            margin-top: 30px;
+            font-size: 2rem;
+            color: #d97706;
+            font-weight: bold;
+        }
+
+        /* Sistema de Flores */
+        .flower-container {
+            position: absolute;
+            bottom: 0;
+            width: 10px;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .stem {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 0px;
+            background: linear-gradient(to top, #0f766e, #22c55e);
+            border-radius: 4px;
+            transition: height 1.5s ease-out;
+        }
+
+        .leaf {
+            position: absolute;
+            width: 25px;
+            height: 12px;
+            background: #22c55e;
+            opacity: 0;
+            transition: all 0.5s ease-out 1s; /* Retraso para que crezca el tallo primero */
+        }
+        .leaf.left {
+            right: 100%;
+            bottom: 30%;
+            border-radius: 15px 0 15px 0;
+            transform-origin: right center;
+            transform: scale(0) rotate(-20deg);
+        }
+        .leaf.right {
+            left: 100%;
+            bottom: 60%;
+            border-radius: 0 15px 0 15px;
+            transform-origin: left center;
+            transform: scale(0) rotate(20deg);
+        }
+        .flower-container.grown .leaf {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        .head {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 90px;
+            height: 90px;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.2s; /* Aparece después del tallo */
+            filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.1));
+        }
+
+        .flower-container.grown .head {
+            transform: translate(-50%, -50%) scale(1);
+            animation: sway 4s infinite ease-in-out alternate 2s;
+        }
+
+        .flower-container.glow .head {
+            filter: drop-shadow(0 0 20px #facc15) drop-shadow(0 0 40px #fef08a);
+            animation: sway 4s infinite ease-in-out alternate, pulse-flower 2s infinite alternate;
+        }
+
+        @keyframes sway {
+            0% { transform: translate(-50%, -50%) scale(1) rotate(-6deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(6deg); }
+        }
+
+        @keyframes pulse-flower {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        .petals {
+            transform-origin: center;
+            animation: spin-slow 30s linear infinite;
+        }
+
+        @keyframes spin-slow {
+            100% { transform: rotate(360deg); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Escenario -->
+    <div class="sun"></div>
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+
+    <div id="instruction">Toca la tierra para plantar una flor...</div>
+
+    <!-- UI -->
+    <div id="message-modal"></div>
+
+    <div id="final-message">
+        <!-- Puedes editar este mensaje final directamente aquí en el HTML -->
+        <div id="final-text">Todas las flores regaladas este día se marchitarán o morirán, este recuerdo permanecerá.</div>
+        <span>🌻 Feliz Día de las Flores Amarillas 🌻</span>
+    </div>
+
+    <script>
+        // === ARRAY DE MENSAJES EDITABLES ===
+        const messages = [
+            "Como estas flores que hoy florecen,\nasí crece lo que siento por ti:\ndespacio, seguro, sin apuro,\npero sin poder detenerse.",
+            "No planté flores al azar,\ncada una la sembré con intención.\nSi esto fuera código, tú serías\nla única constante en mi función.",
+            "El amarillo de estas flores\nes apenas un reflejo\nde lo que tú iluminas\ncada vez que estás cerca.",
+            "Dicen que hoy florece la primavera,\npero contigo florece todo el año.\nFeliz Día de las Flores Amarillas,\nmi persona favorita en este mundo.",
+            "Un jardín entero planté por ti,\nflor por flor, recuerdo por recuerdo.\nFeliz Día de las Flores Amarillas,\ngracias por ser mi primavera."
+        ];
+        // ===================================
+
+        let plantedCount = 0;
+        let canPlant = true;
+
+        const instruction = document.getElementById('instruction');
+        const modal = document.getElementById('message-modal');
+        const finalMessage = document.getElementById('final-message');
+
+        document.body.addEventListener('click', (e) => {
+            if (!canPlant || plantedCount >= messages.length) return;
+
+            // Bloquear clic si es muy arriba en el cielo (asegura que las flores no crezcan flotando)
+            const yRatio = e.clientY / window.innerHeight;
+            if (yRatio < 0.3) return; 
+
+            canPlant = false;
+            instruction.style.opacity = '0'; // Ocultar instrucción inicial
+
+            // Crear y agregar la flor
+            const flower = createFlower(e.clientX, e.clientY);
+            document.body.appendChild(flower);
+
+            // Iniciar animación de crecimiento (tallo)
+            setTimeout(() => {
+                flower.classList.add('grown');
+                // La altura del tallo es la distancia desde abajo de la pantalla hasta el punto del clic
+                const stemHeight = window.innerHeight - e.clientY + 40; 
+                flower.querySelector('.stem').style.height = stemHeight + 'px';
+            }, 50);
+
+            // Mostrar el mensaje correspondiente a esta flor
+            setTimeout(() => {
+                showModal(messages[plantedCount]);
+                plantedCount++;
+            }, 2000); // Esperar a que la flor florezca (tallo + cabeza)
+        });
+
+        function showModal(text) {
+            modal.innerText = text;
+            modal.classList.add('show');
+            
+            // El mensaje se queda visible por unos segundos y luego desaparece
+            setTimeout(() => {
+                modal.classList.remove('show');
+                
+                // Si ya se plantaron todas las flores
+                if (plantedCount >= messages.length) {
+                    setTimeout(showFinalEvent, 1000);
+                } else {
+                    canPlant = true; // Permitir plantar la siguiente
+                }
+            }, 4500); // 4.5 segundos de lectura
+        }
+
+        function showFinalEvent() {
+            // Animación final: iluminar las flores
+            const flowers = document.querySelectorAll('.flower-container');
+            flowers.forEach(f => f.classList.add('glow'));
+
+            // Mostrar mensaje final
+            finalMessage.classList.add('show');
+        }
+
+        function createFlower(x, y) {
+            const container = document.createElement('div');
+            container.className = 'flower-container';
+            container.style.left = x + 'px';
+            
+            const stem = document.createElement('div');
+            stem.className = 'stem';
+
+            const leaf1 = document.createElement('div');
+            leaf1.className = 'leaf left';
+            const leaf2 = document.createElement('div');
+            leaf2.className = 'leaf right';
+
+            // Dibujar la flor con SVG (sin imágenes externas)
+            const svgNS = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(svgNS, "svg");
+            svg.setAttribute("viewBox", "-50 -50 100 100");
+            svg.setAttribute("class", "head");
+
+            const petalsGroup = document.createElementNS(svgNS, "g");
+            petalsGroup.setAttribute("class", "petals");
+            
+            // Crear 12 pétalos amarillos
+            for (let i = 0; i < 12; i++) {
+                const petal = document.createElementNS(svgNS, "ellipse");
+                petal.setAttribute("cx", "0");
+                petal.setAttribute("cy", "-24");
+                petal.setAttribute("rx", "10");
+                petal.setAttribute("ry", "26");
+                petal.setAttribute("fill", "#facc15");
+                petal.setAttribute("transform", `rotate(${i * 30})`);
+                petalsGroup.appendChild(petal);
+            }
+
+            // Centro de la flor
+            const core = document.createElementNS(svgNS, "circle");
+            core.setAttribute("cx", "0");
+            core.setAttribute("cy", "0");
+            core.setAttribute("r", "16");
+            core.setAttribute("fill", "#8B4513");
+
+            const coreHighlight = document.createElementNS(svgNS, "circle");
+            coreHighlight.setAttribute("cx", "-3");
+            coreHighlight.setAttribute("cy", "-3");
+            coreHighlight.setAttribute("r", "14");
+            coreHighlight.setAttribute("fill", "#a0522d");
+
+            svg.appendChild(petalsGroup);
+            svg.appendChild(core);
+            svg.appendChild(coreHighlight);
+
+            stem.appendChild(leaf1);
+            stem.appendChild(leaf2);
+            stem.appendChild(svg); // La cabeza SVG se ancla al top del tallo
+
+            container.appendChild(stem);
+            return container;
+        }
+    </script>
+</body>
+</html>
